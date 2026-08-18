@@ -146,9 +146,10 @@
     <button class="btn-calculate" onclick="sendDataToBot()">Рассчитать конструкцию 🚀</button>
 
     <script>
-        // Инициализируем объект Telegram WebApp
-        var tg = window.Telegram.WebApp;
-        tg.expand();
+        // Автоматически расширяем приложение при старте
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.expand();
+        }
 
         function changeVal(id, amount) {
             var input = document.getElementById(id);
@@ -190,11 +191,13 @@
                     price_bag: parseFloat(document.getElementById('price_bag').value)
                 };
                 
-                // Передаем данные в Телеграм
-                tg.sendData(JSON.stringify(payload));
-                
-                // Закрываем окно приложения
-                tg.close();
+                // Безопасное прямое обращение к API Telegram в момент клика
+                if (window.Telegram && window.Telegram.WebApp) {
+                    window.Telegram.WebApp.sendData(JSON.stringify(payload));
+                    window.Telegram.WebApp.close();
+                } else {
+                    alert("API Telegram не найдено. Откройте приложение внутри мессенджера.");
+                }
             } catch (error) {
                 alert("Ошибка выполнения: " + error.message);
             }
