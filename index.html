@@ -16,7 +16,6 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            padding-bottom: 80px; /* Отступ под нативную нижнюю кнопку */
         }
         .section-title {
             color: #26A69A;
@@ -74,11 +73,17 @@
         .disabled-text {
             color: gray !important;
         }
-        .version-tag {
-            font-size: 10px;
-            color: #555;
-            text-align: center;
+        .btn-calculate {
+            background-color: #2e7d32;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
             margin-top: 10px;
+            width: 100%;
         }
     </style>
 </head>
@@ -138,23 +143,15 @@
         <input type="number" id="price_bag" value="15.00">
     </div>
 
-    <div class="version-tag">Релиз архитектуры v4.0 (Нативная кнопка)</div>
+    <!-- Кнопка вернулась на сам сайт -->
+    <button class="btn-calculate" onclick="sendDataToBot()">Рассчитать Расход Смесей 🚀</button>
 
     <script>
-        // Инициализируем Telegram WebApp
+        // Инициализируем сессию
         var tg = window.Telegram.WebApp;
-        tg.expand();
-
-        // Настраиваем нативную нижнюю кнопку самого Telegram
-        tg.MainButton.text = "РАССЧИТАТЬ СМЕТУ ПОЛОВ 🚀";
-        tg.MainButton.textColor = "#ffffff";
-        tg.MainButton.color = "#2e7d32";
-        tg.MainButton.show(); // Показываем её внизу экрана мессенджера
-
-        // Вешаем событие клика на нативную кнопку Telegram
-        tg.onEvent('mainButtonClicked', function() {
-            sendDataToBot();
-        });
+        if (tg) {
+            tg.expand();
+        }
 
         function changeVal(id, amount) {
             var input = document.getElementById(id);
@@ -184,23 +181,26 @@
         }
 
         function sendDataToBot() {
-            try {
-                var usePenoplex = document.getElementById('penoplex_var').checked;
-                var payload = {
-                    mix_name: document.getElementById('mix_select').value,
-                    wall_a: parseFloat(document.getElementById('wall_a').value),
-                    wall_b: parseFloat(document.getElementById('wall_b').value),
-                    total_height: parseFloat(document.getElementById('height').value),
-                    use_penoplex: usePenoplex,
-                    penoplex_thick: usePenoplex ? parseFloat(document.getElementById('penoplex_thick').value) : 0.0,
-                    price_bag: parseFloat(document.getElementById('price_bag').value)
-                };
-                
-                // Передаем данные боту
+            var usePenoplex = document.getElementById('penoplex_var').checked;
+            
+            var payload = {
+                mix_name: document.getElementById('mix_select').value,
+                wall_a: parseFloat(document.getElementById('wall_a').value),
+                wall_b: parseFloat(document.getElementById('wall_b').value),
+                total_height: parseFloat(document.getElementById('height').value),
+                use_penoplex: usePenoplex,
+                penoplex_thick: usePenoplex ? parseFloat(document.getElementById('penoplex_thick').value) : 0.0,
+                price_bag: parseFloat(document.getElementById('price_bag').value)
+            };
+
+            // Самая надежная отправка через встроенный объект Telegram (без вызова глобального sendData напрямую)
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.sendData(JSON.stringify(payload));
+                window.Telegram.WebApp.close();
+            } else {
+                // Страховочный вариант для десктопа
                 tg.sendData(JSON.stringify(payload));
                 tg.close();
-            } catch (error) {
-                alert("Ошибка отправки пакета: " + error.message);
             }
         }
     </script>
