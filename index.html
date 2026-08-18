@@ -188,8 +188,11 @@
                 price_bag: parseFloat(document.getElementById('price_bag').value)
             };
             
-            // Чистая, прямая отправка строки в Телеграм
-            tg.sendData(JSON.stringify(payload));
+            // Превращаем данные в текстовую команду для бота
+            const cmdText = "/calc_data " + JSON.stringify(payload);
+            
+            // Отправляем как обычный текст от имени пользователя
+            tg.sendData(cmdText);
             tg.close();
         }
     </script>
