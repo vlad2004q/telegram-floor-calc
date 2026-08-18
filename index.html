@@ -23,7 +23,7 @@
             font-weight: bold;
             margin-bottom: 5px;
         }
-        select, input {
+        select, input[type="number"] {
             width: 100%;
             padding: 10px;
             border-radius: 6px;
@@ -56,6 +56,22 @@
         .counter-value {
             width: 80px;
             text-align: center;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            user-select: none;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #26A69A;
+        }
+        .disabled-text {
+            color: gray !important;
         }
         .btn-calculate {
             background-color: #2e7d32;
@@ -110,6 +126,22 @@
         </div>
     </div>
 
+    <!-- Чекбокс Пеноплекса -->
+    <div class="checkbox-group">
+        <input type="checkbox" id="penoplex_var" onchange="togglePenoplex()">
+        <label for="penoplex_var">Использовать утеплитель (Пеноплекс)</label>
+    </div>
+
+    <!-- Счётчик Пеноплекса (по умолчанию выключен) -->
+    <div class="counter-group disabled-text" id="penoplex_row">
+        <span id="penoplex_label">Толщина Пеноплекса (мм):</span>
+        <div class="counter-controls">
+            <button class="btn-counter" id="btn_p_minus" onclick="changeVal('penoplex_thick', -5)" disabled>-</button>
+            <input type="number" id="penoplex_thick" class="counter-value" value="50" step="5" disabled>
+            <button class="btn-counter" id="btn_p_plus" onclick="changeVal('penoplex_thick', 5)" disabled>+</button>
+        </div>
+    </div>
+
     <div>
         <div style="margin-bottom: 5px;">Стоимость мешка (руб):</div>
         <input type="number" id="price_bag" value="15.00">
@@ -125,20 +157,41 @@
             const input = document.getElementById(id);
             let val = parseFloat(input.value) + amount;
             if (val < 0) val = 0;
-            input.value = val.toFixed(id === 'height' ? 0 : 1);
+            input.value = val.toFixed(id === 'wall_a' || id === 'wall_b' ? 1 : 0);
+        }
+
+        function togglePenoplex() {
+            const isChecked = document.getElementById('penoplex_var').checked;
+            const row = document.getElementById('penoplex_row');
+            const thickInput = document.getElementById('penoplex_thick');
+            const btnMinus = document.getElementById('btn_p_minus');
+            const btnPlus = document.getElementById('btn_p_plus');
+
+            if (isChecked) {
+                row.classList.remove('disabled-text');
+                thickInput.removeAttribute('disabled');
+                btnMinus.removeAttribute('disabled');
+                btnPlus.removeAttribute('disabled');
+            } else {
+                row.classList.add('disabled-text');
+                thickInput.setAttribute('disabled', 'true');
+                btnMinus.setAttribute('disabled', 'true');
+                btnPlus.setAttribute('disabled', 'true');
+            }
         }
 
         function sendDataToBot() {
-            // Собираем все введенные пользователем данные кликов в один JSON-пакет
+            const usePenoplex = document.getElementById('penoplex_var').checked;
             const payload = {
                 mix_name: document.getElementById('mix_select').value,
                 wall_a: parseFloat(document.getElementById('wall_a').value),
                 wall_b: parseFloat(document.getElementById('wall_b').value),
-                thick: parseFloat(document.getElementById('height').value),
+                total_height: parseFloat(document.getElementById('height').value),
+                use_penoplex: usePenoplex,
+                penoplex_thick: usePenoplex ? parseFloat(document.getElementById('penoplex_thick').value) : 0.0,
                 price_bag: parseFloat(document.getElementById('price_bag').value)
             };
             
-            // Отправляем данные обратно в чат Python-боту
             tg.sendData(JSON.stringify(payload));
             tg.close();
         }
