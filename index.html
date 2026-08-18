@@ -1,3 +1,119 @@
+Skip to content
+vlad2004q
+telegram-floor-calc
+Repository navigation
+Code
+Issues
+Pull requests
+Actions
+Projects
+Wiki
+Security and quality
+Insights
+Settings
+Files
+Go to file
+t
+T
+index.html
+telegram-floor-calc
+/
+index.html
+in
+main
+
+Edit
+
+Preview
+Indent mode
+
+Spaces
+Indent size
+
+4
+Line wrap mode
+
+No wrap
+Editing index.html file contents
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -77,125 +193,4 @@
             background-color: #2e7d32;
             color: white;
             padding: 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            width: 100%;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="section-title">Параметры пола (кликами)</div>
-    
-    <select id="mix_select">
-        <option value="Самонивелир Ceresit DG (Наливной пол, 25 кг)">Самонивелир Ceresit DG</option>
-        <option value="Ceresit CN 83 (Стяжка высокопрочная, 25 кг)">Ceresit CN 83</option>
-        <option value="Тайфун Мастер № 44 PLUS (Стяжка, 25 кг)">Тайфун Мастер № 44 PLUS</option>
-    </select>
-
-    <div class="counter-group">
-        <span>Длина Стены А (метры):</span>
-        <div class="counter-controls">
-            <button class="btn-counter" onclick="changeVal('wall_a', -0.1)">-</button>
-            <input type="number" id="wall_a" class="counter-value" value="4.0" step="0.1">
-            <button class="btn-counter" onclick="changeVal('wall_a', 0.1)">+</button>
-        </div>
-    </div>
-
-    <div class="counter-group">
-        <span>Длина Стены Б (метры):</span>
-        <div class="counter-controls">
-            <button class="btn-counter" onclick="changeVal('wall_b', -0.1)">-</button>
-            <input type="number" id="wall_b" class="counter-value" value="3.0" step="0.1">
-            <button class="btn-counter" onclick="changeVal('wall_b', 0.1)">+</button>
-        </div>
-    </div>
-
-    <div class="counter-group">
-        <span>Общая высота пола (мм):</span>
-        <div class="counter-controls">
-            <button class="btn-counter" onclick="changeVal('height', -5)">-</button>
-            <input type="number" id="height" class="counter-value" value="80" step="5">
-            <button class="btn-counter" onclick="changeVal('height', 5)">+</button>
-        </div>
-    </div>
-
-    <div class="checkbox-group">
-        <input type="checkbox" id="penoplex_var" onchange="togglePenoplex()">
-        <label for="penoplex_var">Использовать утеплитель (Пеноплекс)</label>
-    </div>
-
-    <div class="counter-group disabled-text" id="penoplex_row">
-        <span id="penoplex_label">Толщина Пеноплекса (мм):</span>
-        <div class="counter-controls">
-            <button class="btn-counter" id="btn_p_minus" onclick="changeVal('penoplex_thick', -5)" disabled>-</button>
-            <input type="number" id="penoplex_thick" class="counter-value" value="50" step="5" disabled>
-            <button class="btn-counter" id="btn_p_plus" onclick="changeVal('penoplex_thick', 5)" disabled>+</button>
-        </div>
-    </div>
-
-    <div>
-        <div style="margin-bottom: 5px;">Стоимость мешка (руб):</div>
-        <input type="number" id="price_bag" value="15.00">
-    </div>
-
-    <button class="btn-calculate" onclick="sendDataToBot()">Рассчитать конструкцию 🚀</button>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-
-        function changeVal(id, amount) {
-            const input = document.getElementById(id);
-            let val = parseFloat(input.value) + amount;
-            if (val < 0) val = 0;
-            input.value = val.toFixed(id === 'wall_a' || id === 'wall_b' ? 1 : 0);
-        }
-
-        function togglePenoplex() {
-            const isChecked = document.getElementById('penoplex_var').checked;
-            const row = document.getElementById('penoplex_row');
-            const thickInput = document.getElementById('penoplex_thick');
-            const btnMinus = document.getElementById('btn_p_minus');
-            const btnPlus = document.getElementById('btn_p_plus');
-
-            if (isChecked) {
-                row.classList.remove('disabled-text');
-                thickInput.removeAttribute('disabled');
-                btnMinus.removeAttribute('disabled');
-                btnPlus.removeAttribute('disabled');
-            } else {
-                row.classList.add('disabled-text');
-                thickInput.setAttribute('disabled', 'true');
-                btnMinus.setAttribute('disabled', 'true');
-                btnPlus.setAttribute('disabled', 'true');
-            }
-        }
-
-        function sendDataToBot() {
-            const usePenoplex = document.getElementById('penoplex_var').checked;
-            const payload = {
-                mix_name: document.getElementById('mix_select').value,
-                wall_a: parseFloat(document.getElementById('wall_a').value),
-                wall_b: parseFloat(document.getElementById('wall_b').value),
-                total_height: parseFloat(document.getElementById('height').value),
-                use_penoplex: usePenoplex,
-                penoplex_thick: usePenoplex ? parseFloat(document.getElementById('penoplex_thick').value) : 0.0,
-                price_bag: parseFloat(document.getElementById('price_bag').value)
-            };
-            
-            // Отправляем данные в Телеграм
-            tg.sendData(JSON.stringify(payload));
-            
-            // Даем задержку в 150 миллисекунд перед закрытием окна, чтобы данные успели уйти
-            setTimeout(() => {
-                tg.close();
-            }, 150);
-        }
-    </script>
-</body>
-</html>
+Use Control + Shift + m to toggle the tab key moving focus. Alternatively, use esc then tab to move to the next interactive element on the page.
