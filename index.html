@@ -16,6 +16,7 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
+            padding-bottom: 80px; /* Место под главную кнопку */
         }
         .section-title {
             color: #26A69A;
@@ -143,12 +144,12 @@
         <input type="number" id="price_bag" value="15.00">
     </div>
 
-    <button class="btn-calculate" onclick="sendDataToBot()">Готово! Выдать Смету 🚀</button>
+    <!-- Заменяем обычную кнопку на вызов альтернативного метода -->
+    <button class="btn-calculate" onclick="sendDataToBot()">Нажмите Сюда Для Расчета 🚀</button>
 
     <script>
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.expand();
-        }
+        var tg = window.Telegram.WebApp;
+        tg.expand();
 
         function changeVal(id, amount) {
             var input = document.getElementById(id);
@@ -178,26 +179,23 @@
         }
 
         function sendDataToBot() {
-            try {
-                var usePenoplex = document.getElementById('penoplex_var').checked;
-                var payload = {
-                    mix_name: document.getElementById('mix_select').value,
-                    wall_a: parseFloat(document.getElementById('wall_a').value),
-                    wall_b: parseFloat(document.getElementById('wall_b').value),
-                    total_height: parseFloat(document.getElementById('height').value),
-                    use_penoplex: usePenoplex,
-                    penoplex_thick: usePenoplex ? parseFloat(document.getElementById('penoplex_thick').value) : 0.0,
-                    price_bag: parseFloat(document.getElementById('price_bag').value)
-                };
-                
-                // Самый надежный нативный метод отправки в pyTelegramBotAPI
-                if (window.Telegram && window.Telegram.WebApp) {
-                    window.Telegram.WebApp.sendData(JSON.stringify(payload));
-                    window.Telegram.WebApp.close();
-                }
-            } catch (error) {
-                alert("Ошибка выполнения: " + error.message);
-            }
+            var usePenoplex = document.getElementById('penoplex_var').checked;
+            
+            // Формируем ОЧЕНЬ простую текстовую строку, похожую на ваше кодовое слово
+            var mix = document.getElementById('mix_select').value;
+            var a = document.getElementById('wall_a').value;
+            var b = document.getElementById('wall_b').value;
+            var h = document.getElementById('height').value;
+            var p_use = usePenoplex ? "1" : "0";
+            var p_thick = document.getElementById('penoplex_thick').value;
+            var price = document.getElementById('price_bag').value;
+
+            // Собираем всё в обычную текстовую строку через маркер "посчитать_"
+            var cmdText = "посчитать_" + mix + "_" + a + "_" + b + "_" + h + "_" + p_use + "_" + p_thick + "_" + price;
+
+            // Железобетонный обход для iPhone: отправляем текстовую команду
+            tg.sendData(cmdText);
+            tg.close();
         }
     </script>
 </body>
