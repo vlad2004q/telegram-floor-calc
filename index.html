@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор устройства полов</title>
+    <!-- Подключаем Telegram WebApp API -->
+    <script src="https://telegram.org"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .section-title {
+            color: #26A69A;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background-color: #2b2b2b;
+            color: white;
+            box-sizing: border-box;
+        }
+        .counter-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .counter-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-counter {
+            width: 35px;
+            height: 35px;
+            background-color: #34495e;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .counter-value {
+            width: 80px;
+            text-align: center;
+        }
+        .btn-calculate {
+            background-color: #2e7d32;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="section-title">Параметры пола (кликами)</div>
+    
+    <select id="mix_select">
+        <option value="Самонивелир Ceresit DG (Наливной пол, 25 кг)">Самонивелир Ceresit DG</option>
+        <option value="Ceresit CN 83 (Стяжка высокопрочная, 25 кг)">Ceresit CN 83</option>
+        <option value="Тайфун Мастер № 44 PLUS (Стяжка, 25 кг)">Тайфун Мастер № 44 PLUS</option>
+    </select>
+
+    <!-- Счётчик Стены А -->
+    <div class="counter-group">
+        <span>Длина Стены А (метры):</span>
+        <div class="counter-controls">
+            <button class="btn-counter" onclick="changeVal('wall_a', -0.1)">-</button>
+            <input type="number" id="wall_a" class="counter-value" value="4.0" step="0.1">
+            <button class="btn-counter" onclick="changeVal('wall_a', 0.1)">+</button>
+        </div>
+    </div>
+
+    <!-- Счётчик Стены Б -->
+    <div class="counter-group">
+        <span>Длина Стены Б (метры):</span>
+        <div class="counter-controls">
+            <button class="btn-counter" onclick="changeVal('wall_b', -0.1)">-</button>
+            <input type="number" id="wall_b" class="counter-value" value="3.0" step="0.1">
+            <button class="btn-counter" onclick="changeVal('wall_b', 0.1)">+</button>
+        </div>
+    </div>
+
+    <!-- Счётчик Высоты -->
+    <div class="counter-group">
+        <span>Общая высота пола (мм):</span>
+        <div class="counter-controls">
+            <button class="btn-counter" onclick="changeVal('height', -5)">-</button>
+            <input type="number" id="height" class="counter-value" value="80" step="5">
+            <button class="btn-counter" onclick="changeVal('height', 5)">+</button>
+        </div>
+    </div>
+
+    <div>
+        <div style="margin-bottom: 5px;">Стоимость мешка (руб):</div>
+        <input type="number" id="price_bag" value="15.00">
+    </div>
+
+    <button class="btn-calculate" onclick="sendDataToBot()">Рассчитать конструкцию 🚀</button>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        function changeVal(id, amount) {
+            const input = document.getElementById(id);
+            let val = parseFloat(input.value) + amount;
+            if (val < 0) val = 0;
+            input.value = val.toFixed(id === 'height' ? 0 : 1);
+        }
+
+        function sendDataToBot() {
+            // Собираем все введенные пользователем данные кликов в один JSON-пакет
+            const payload = {
+                mix_name: document.getElementById('mix_select').value,
+                wall_a: parseFloat(document.getElementById('wall_a').value),
+                wall_b: parseFloat(document.getElementById('wall_b').value),
+                thick: parseFloat(document.getElementById('height').value),
+                price_bag: parseFloat(document.getElementById('price_bag').value)
+            };
+            
+            // Отправляем данные обратно в чат Python-боту
+            tg.sendData(JSON.stringify(payload));
+            tg.close();
+        }
+    </script>
+</body>
+</html>
