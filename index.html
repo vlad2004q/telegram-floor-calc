@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Калькулятор устройства полов</title>
-    <!-- Подключаем официальный скрипт Telegram в самом начале head -->
     <script src="https://telegram.org"></script>
     <style>
         body {
@@ -143,10 +142,9 @@
         <input type="number" id="price_bag" value="15.00">
     </div>
 
-    <button class="btn-calculate" onclick="sendDataToBot()">Рассчитать Смету Полов 🚀</button>
+    <button class="btn-calculate" onclick="sendDataToBot()">Финальный Расчет Сметы 🚀</button>
 
     <script>
-        // Инициализируем WebApp глобально и сообщаем Telegram, что приложение готово
         document.addEventListener("DOMContentLoaded", function() {
             if (window.Telegram && window.Telegram.WebApp) {
                 window.Telegram.WebApp.ready();
@@ -182,23 +180,27 @@
         }
 
         function sendDataToBot() {
-            try {
-                var usePenoplex = document.getElementById('penoplex_var').checked;
-                var payload = {
-                    mix_name: document.getElementById('mix_select').value,
-                    wall_a: parseFloat(document.getElementById('wall_a').value),
-                    wall_b: parseFloat(document.getElementById('wall_b').value),
-                    total_height: parseFloat(document.getElementById('height').value),
-                    use_penoplex: usePenoplex,
-                    penoplex_thick: usePenoplex ? parseFloat(document.getElementById('penoplex_thick').value) : 0.0,
-                    price_bag: parseFloat(document.getElementById('price_bag').value)
-                };
-                
-                // Железобетонное обращение к API без промежуточных переменных
-                window.Telegram.WebApp.sendData(JSON.stringify(payload));
+            var usePenoplex = document.getElementById('penoplex_var').checked;
+            var payload = {
+                mix_name: document.getElementById('mix_select').value,
+                wall_a: parseFloat(document.getElementById('wall_a').value),
+                wall_b: parseFloat(document.getElementById('wall_b').value),
+                total_height: parseFloat(document.getElementById('height').value),
+                use_penoplex: usePenoplex,
+                penoplex_thick: usePenoplex ? parseFloat(document.getElementById('penoplex_thick').value) : 0.0,
+                price_bag: parseFloat(document.getElementById('price_bag').value)
+            };
+            
+            // "Железобетонный" способ отправки для iOS: уходим по глубокой ссылке прямо к боту
+            var botUser = "stroy_calc_vlad_bot"; // Наш юзернейм нового бота
+            var encData = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+            
+            if (window.Telegram && window.Telegram.WebApp) {
+                // Пытаемся закрыть нативно через сессию, отправив команду в глубокую ссылку чата
+                window.Telegram.WebApp.openTelegramLink("https://t.me" + botUser + "?start=" + encData);
                 window.Telegram.WebApp.close();
-            } catch (error) {
-                alert("Ошибка сессии: используйте только нижнюю кнопку клавиатуры чата.");
+            } else {
+                window.location.href = "https://t.me" + botUser + "?start=" + encData;
             }
         }
     </script>
