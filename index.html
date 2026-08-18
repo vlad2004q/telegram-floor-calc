@@ -83,6 +83,7 @@
             font-weight: bold;
             cursor: pointer;
             margin-top: 10px;
+            width: 100%;
         }
     </style>
 </head>
@@ -132,7 +133,7 @@
         <label for="penoplex_var">Использовать утеплитель (Пеноплекс)</label>
     </div>
 
-    <!-- Счётчик Пеноплекса (по умолчанию выключен) -->
+    <!-- Счётчик Пеноплекса -->
     <div class="counter-group disabled-text" id="penoplex_row">
         <span id="penoplex_label">Толщина Пеноплекса (мм):</span>
         <div class="counter-controls">
@@ -192,8 +193,13 @@
                 price_bag: parseFloat(document.getElementById('price_bag').value)
             };
             
-            tg.sendData(JSON.stringify(payload));
-            tg.close();
+            // Защита от запуска через Menu Button:
+            try {
+                tg.sendData(JSON.stringify(payload));
+                tg.close();
+            } catch (e) {
+                alert("Пожалуйста, откройте калькулятор через кнопку '📐 Открыть Калькулятор Полов 🚀' внизу чата! Запуск через кнопку Меню блокирует отправку данных правилами Telegram.");
+            }
         }
     </script>
 </body>
