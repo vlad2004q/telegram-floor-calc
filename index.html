@@ -143,11 +143,17 @@
         <input type="number" id="price_bag" value="15.00">
     </div>
 
-    <button class="btn-calculate" onclick="sendDataToBot()">Получить Инженерную Смету 🚀</button>
+    <button class="btn-calculate" onclick="sendDataToBot()">Выдать Готовую Смету 🚀</button>
 
     <script>
         var tg = window.Telegram.WebApp;
         if (tg) { tg.expand(); }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            if (tg) {
+                tg.ready();
+            }
+        });
 
         function changeVal(id, amount) {
             var input = document.getElementById(id);
@@ -179,7 +185,6 @@
         function sendDataToBot() {
             var usePenoplex = document.getElementById('penoplex_var').checked;
             
-            // Собираем данные в компактный массив, заменяя пробелы
             var payload = [
                 document.getElementById('mix_select').value.replace(/ /g, "x"),
                 document.getElementById('wall_a').value,
@@ -190,16 +195,17 @@
                 document.getElementById('price_bag').value
             ];
 
-            // Соединяем параметры через дефис для передачи в deep link
             var dataString = payload.join("-");
             var botUser = "stroy_calc_vlad_bot";
 
-            // Безопасный переход по deep-linking ссылке мессенджера Telegram
+            // ИСПРАВЛЕНО: Добавлен обязательный слеш "/" после t.me
+            var targetLink = "https://t.me" + botUser + "?start=" + dataString;
+
             if (tg) {
-                tg.openTelegramLink("https://t.me" + botUser + "?start=" + dataString);
+                tg.openTelegramLink(targetLink);
                 tg.close();
             } else {
-                window.location.href = "https://t.me" + botUser + "?start=" + dataString;
+                window.location.href = targetLink;
             }
         }
     </script>
