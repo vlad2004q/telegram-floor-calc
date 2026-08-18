@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Калькулятор устройства полов</title>
-    <!-- Подключаем официальный скрипт Telegram -->
+    <!-- Подключаем официальный скрипт Telegram в самом начале head -->
     <script src="https://telegram.org"></script>
     <style>
         body {
@@ -110,7 +110,7 @@
         <span>Длина Стены Б (метры):</span>
         <div class="counter-controls">
             <button class="btn-counter" onclick="changeVal('wall_b', -0.1)">-</button>
-            <input type="number" id="number" id="wall_b" class="counter-value" value="3.0" step="0.1">
+            <input type="number" id="wall_b" class="counter-value" value="3.0" step="0.1">
             <button class="btn-counter" onclick="changeVal('wall_b', 0.1)">+</button>
         </div>
     </div>
@@ -143,20 +143,16 @@
         <input type="number" id="price_bag" value="15.00">
     </div>
 
-    <button class="btn-calculate" onclick="sendDataToBot()">Рассчитать Carson 🚀</button>
+    <button class="btn-calculate" onclick="sendDataToBot()">Рассчитать Смету Полов 🚀</button>
 
     <script>
-        // Функция расширения окна, которая сработает в любом случае
-        function initWebApp() {
-            var webApp = window.Telegram ? window.Telegram.WebApp : null;
-            if (webApp) {
-                webApp.expand();
+        // Инициализируем WebApp глобально и сообщаем Telegram, что приложение готово
+        document.addEventListener("DOMContentLoaded", function() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.ready();
+                window.Telegram.WebApp.expand();
             }
-        }
-        
-        // Запускаем инициализацию сразу и при полной загрузке страницы
-        initWebApp();
-        window.onload = initWebApp;
+        });
 
         function changeVal(id, amount) {
             var input = document.getElementById(id);
@@ -187,14 +183,6 @@
 
         function sendDataToBot() {
             try {
-                // Принудительно ищем объект Telegram в глобальном окне браузера iPhone
-                var webApp = window.Telegram ? window.Telegram.WebApp : (window.parent.Telegram ? window.parent.Telegram.WebApp : null);
-                
-                if (!webApp) {
-                    alert("Ошибка инициализации сессии Telegram. Пожалуйста, нажмите на 3 точки вверху и выберите 'Перезагрузить страницу'.");
-                    return;
-                }
-
                 var usePenoplex = document.getElementById('penoplex_var').checked;
                 var payload = {
                     mix_name: document.getElementById('mix_select').value,
@@ -206,11 +194,11 @@
                     price_bag: parseFloat(document.getElementById('price_bag').value)
                 };
                 
-                // Передаем строку и закрываем
-                webApp.sendData(JSON.stringify(payload));
-                webApp.close();
+                // Железобетонное обращение к API без промежуточных переменных
+                window.Telegram.WebApp.sendData(JSON.stringify(payload));
+                window.Telegram.WebApp.close();
             } catch (error) {
-                alert("Критический сбой API: " + error.message);
+                alert("Ошибка сессии: используйте только нижнюю кнопку клавиатуры чата.");
             }
         }
     </script>
