@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькулятор устройства полов</title>
+    <title>Калькулятор полов</title>
     <!-- Подключаем Telegram WebApp API -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://telegram.org"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,73 +17,24 @@
             flex-direction: column;
             gap: 15px;
         }
-        .section-title {
-            color: #26A69A;
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
+        .section-title { color: #26A69A; font-size: 16px; font-weight: bold; }
         select, input[type="number"] {
-            width: 100%;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #333;
-            background-color: #2b2b2b;
-            color: white;
-            box-sizing: border-box;
+            width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #333;
+            background-color: #2b2b2b; color: white; box-sizing: border-box;
         }
-        .counter-group {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        .counter-controls {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
+        .counter-group { display: flex; align-items: center; justify-content: space-between; }
+        .counter-controls { display: flex; align-items: center; gap: 5px; }
         .btn-counter {
-            width: 35px;
-            height: 35px;
-            background-color: #34495e;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 18px;
-            font-weight: bold;
+            width: 35px; height: 35px; background-color: #34495e; color: white;
+            border: none; border-radius: 4px; font-size: 18px; font-weight: bold;
         }
-        .counter-value {
-            width: 80px;
-            text-align: center;
-        }
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 5px;
-            margin-bottom: 5px;
-            user-select: none;
-        }
-        .checkbox-group input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            accent-color: #26A69A;
-        }
-        .disabled-text {
-            color: gray !important;
-        }
+        .counter-value { width: 80px; text-align: center; }
+        .checkbox-group { display: flex; align-items: center; gap: 10px; user-select: none; }
+        .checkbox-group input { width: 20px; height: 20px; accent-color: #26A69A; }
+        .disabled-text { color: gray !important; }
         .btn-calculate {
-            background-color: #2e7d32;
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            width: 100%;
+            background-color: #2e7d32; color: white; padding: 12px;
+            border: none; border-radius: 6px; font-size: 14px; font-weight: bold; width: 100%;
         }
     </style>
 </head>
@@ -130,7 +81,7 @@
     </div>
 
     <div class="counter-group disabled-text" id="penoplex_row">
-        <span id="penoplex_label">Толщина <span style="font-size:12px;">Пеноплекса (мм):</span></span>
+        <span>Толщина Пеноплекса (мм):</span>
         <div class="counter-controls">
             <button class="btn-counter" id="btn_p_minus" onclick="changeVal('penoplex_thick', -5)" disabled>-</button>
             <input type="number" id="penoplex_thick" class="counter-value" value="50" step="5" disabled>
@@ -188,11 +139,7 @@
                 price_bag: parseFloat(document.getElementById('price_bag').value)
             };
             
-            // Явно превращаем объект в текст
-            const jsonText = JSON.stringify(payload);
-            
-            // Передаем данные строго строковым типом в API Telegram
-            tg.sendData(jsonText);
+            tg.sendData(JSON.stringify(payload));
             tg.close();
         }
     </script>
