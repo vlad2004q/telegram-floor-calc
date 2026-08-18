@@ -176,23 +176,22 @@
             }
         }
 
-function sendDataToBot() {
-    const usePenoplex = document.getElementById('penoplex_var').checked;
-    const payload = {
-        mix_name: document.getElementById('mix_select').value,
-        wall_a: parseFloat(document.getElementById('wall_a').value),
-        wall_b: parseFloat(document.getElementById('wall_b').value),
-        total_height: parseFloat(document.getElementById('height').value),
-        use_penoplex: usePenoplex,
-        penoplex_thick: usePenoplex ? parseFloat(document.getElementById('penoplex_thick').value) : 0.0,
-        price_bag: parseFloat(document.getElementById('price_bag').value)
-    };
-    
-    // Передаем данные боту как чистую строку через встроенный метод
-    window.Telegram.WebApp.sendData(JSON.stringify(payload));
-    window.Telegram.WebApp.close();
-}
-
+        function sendDataToBot() {
+            const usePenoplex = document.getElementById('penoplex_var').checked;
+            const payload = {
+                mix_name: document.getElementById('mix_select').value,
+                wall_a: parseFloat(document.getElementById('wall_a').value),
+                wall_b: parseFloat(document.getElementById('wall_b').value),
+                total_height: parseFloat(document.getElementById('height').value),
+                use_penoplex: usePenoplex,
+                penoplex_thick: usePenoplex ? parseFloat(document.getElementById('penoplex_thick').value) : 0.0,
+                price_bag: parseFloat(document.getElementById('price_bag').value)
+            };
+            
+            // Чистая строковая отправка данных в API Telegram
+            tg.sendData(JSON.stringify(payload));
+            tg.close();
+        }
     </script>
 </body>
 </html>
