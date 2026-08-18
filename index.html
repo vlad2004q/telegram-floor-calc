@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Калькулятор устройства полов</title>
+    <!-- Подключаем Telegram WebApp API -->
     <script src="https://telegram.org"></script>
     <style>
         body {
@@ -177,8 +178,6 @@
 
         function sendDataToBot() {
             const usePenoplex = document.getElementById('penoplex_var').checked;
-            const initData = tg.initData || "";
-            
             const payload = {
                 mix_name: document.getElementById('mix_select').value,
                 wall_a: parseFloat(document.getElementById('wall_a').value),
@@ -186,22 +185,16 @@
                 total_height: parseFloat(document.getElementById('height').value),
                 use_penoplex: usePenoplex,
                 penoplex_thick: usePenoplex ? parseFloat(document.getElementById('penoplex_thick').value) : 0.0,
-                price_bag: parseFloat(document.getElementById('price_bag').value),
-                init_data: initData  // Передаем данные авторизации Telegram
+                price_bag: parseFloat(document.getElementById('price_bag').value)
             };
             
-            // Отправляем запрос на встроенный веб-сервер вашего Python-бота
-            fetch('http://' + window.location.hostname + ':8080/calculate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-            .then(() => tg.close())
-            .catch(() => {
-                // Если не получилось отправить по сети, пробуем стандартный метод Telegram
-                tg.sendData(JSON.stringify(payload));
+            // Отправляем данные в Телеграм
+            tg.sendData(JSON.stringify(payload));
+            
+            // Даем задержку в 150 миллисекунд перед закрытием окна, чтобы данные успели уйти
+            setTimeout(() => {
                 tg.close();
-            });
+            }, 150);
         }
     </script>
 </body>
