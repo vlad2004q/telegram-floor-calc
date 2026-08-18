@@ -193,13 +193,9 @@
                 price_bag: parseFloat(document.getElementById('price_bag').value)
             };
             
-            // Защита от запуска через Menu Button:
-            try {
-                tg.sendData(JSON.stringify(payload));
-                tg.close();
-            } catch (e) {
-                alert("Пожалуйста, откройте калькулятор через кнопку '📐 Открыть Калькулятор Полов 🚀' внизу чата! Запуск через кнопку Меню блокирует отправку данных правилами Telegram.");
-            }
+            // Чистая, прямая отправка пакета без промежуточных проверок
+            tg.sendData(JSON.stringify(payload));
+            tg.close();
         }
     </script>
 </body>
